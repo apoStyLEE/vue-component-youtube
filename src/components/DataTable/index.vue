@@ -24,7 +24,20 @@
       <tbody>
         <tr v-for="(item, rowIndex) in filteredItems" :key="rowIndex">
           <td v-for="(field, colmnIndex) in schema.fields" :key="colmnIndex">
-            {{ item[field.field] }}
+            <date-cell
+              v-if="field.dataType == 'date'"
+              :value="item[field.field]"
+              :format="field.format"
+            />
+
+            <number-cell
+              v-else-if="field.dataType == 'number'"
+              :value="item[field.field]"
+              :prefix="field.prefix"
+              :suffix="field.suffix"
+            />
+
+            <span v-else>{{ renderCell(field, item) }}</span>
           </td>
         </tr>
       </tbody>
@@ -43,7 +56,14 @@
 </template>
 
 <script>
+import DateCell from "./cellTypes/date.js";
+import NumberCell from "./cellTypes/number";
+
 export default {
+  components: {
+    DateCell,
+    NumberCell,
+  },
   props: {
     schema: {
       type: Object,
@@ -58,6 +78,17 @@ export default {
     return {
       searchText: "",
     };
+  },
+  methods: {
+    renderCell(field, item) {
+      const itemValue = item[field.field];
+
+      if (Array.isArray(itemValue)) {
+        return itemValue.join(field.sperator || ", ");
+      } else {
+        return itemValue;
+      }
+    },
   },
   computed: {
     filteredItems() {
