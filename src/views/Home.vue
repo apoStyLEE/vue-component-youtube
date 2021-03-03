@@ -1,10 +1,11 @@
 <template>
   <div class="home">
-    <data-table :schema="schema" :items="items"> </data-table>
-    <!-- 
-    <hr />
-
-    <data-table :schema="schema2" :items="items" /> -->
+    <data-table
+      :schema="schema"
+      :items="items"
+      @onDataLoaded="handleDataLoaded"
+      @onTextEdit="handleDataTableTextEdit"
+    />
   </div>
 </template>
 
@@ -23,6 +24,7 @@ export default {
         showSearch: true,
         searchField: "name",
         showFooter: true,
+        primaryKey: "id",
         fields: [
           {
             field: "id",
@@ -32,10 +34,14 @@ export default {
           {
             field: "name",
             title: "Adı",
+            inlineEdit: true,
+            inputType: "number",
           },
           {
             field: "city",
             title: "Şehir",
+            inlineEdit: true,
+            type: "textarea",
           },
           {
             field: "date",
@@ -88,6 +94,14 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    handleDataLoaded(itemCount) {
+      console.log("data loaded", itemCount);
+    },
+    handleDataTableTextEdit(item, id, value) {
+      console.log(item, id, value);
+    },
   },
 };
 </script>

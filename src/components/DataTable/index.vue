@@ -37,6 +37,19 @@
               :suffix="field.suffix"
             />
 
+            <inline-edit-cell
+              v-else-if="field.inlineEdit"
+              :value="item[field.field]"
+              :primaryKey="item[schema.primaryKey]"
+              :type="field.type"
+              :inputType="field.inputType"
+              @onInlineEditChangeValue="
+                (id, value) => {
+                  handleInlineEditChangeValue(field, id, value);
+                }
+              "
+            />
+
             <span v-else>{{ renderCell(field, item) }}</span>
           </td>
         </tr>
@@ -58,11 +71,13 @@
 <script>
 import DateCell from "./cellTypes/date.js";
 import NumberCell from "./cellTypes/number";
+import InlineEditCell from "./cellTypes/inlineEdit";
 
 export default {
   components: {
     DateCell,
     NumberCell,
+    InlineEditCell,
   },
   props: {
     schema: {
@@ -89,6 +104,9 @@ export default {
         return itemValue;
       }
     },
+    handleInlineEditChangeValue(item, id, value) {
+      this.$emit("onTextEdit", item, id, value);
+    },
   },
   computed: {
     filteredItems() {
@@ -96,6 +114,11 @@ export default {
         item[this.schema.searchField].startsWith(this.searchText)
       );
     },
+  },
+  created() {
+    setTimeout(() => {
+      this.$emit("onDataLoaded", 10);
+    }, 2000);
   },
 };
 </script>
